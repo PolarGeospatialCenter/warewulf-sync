@@ -30,8 +30,16 @@ func ObjJsonDump(args ...string) ([]wwObj, error) {
 		return nil, err
 	}
 
+	return ParseJsonDump(output)
+}
+
+func ParseJsonDump(output []byte) ([]wwObj, error) {
+	if string(output) == "" {
+		return []wwObj{}, nil
+	}
+
 	result := make([]wwObj, 0)
-	err = json.Unmarshal(output, &result)
+	err := json.Unmarshal(output, &result)
 	if err != nil {
 		return nil, fmt.Errorf("unable to unmarshal output of wwsh object jsondump: %v", err)
 	}
