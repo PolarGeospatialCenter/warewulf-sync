@@ -121,6 +121,13 @@ func (n *Node) UpdateCmd() [][]string {
 		})
 	}
 
+	if n.PxeLoader != "" {
+		cmds = append(cmds, []string{
+			"wwsh", "provision", "set", n.Name,
+			"--pxeloader", n.PxeLoader,
+		})
+	}
+
 	for _, dev := range n.Interfaces {
 		cmd := []string{
 			"wwsh", "node", "set", n.Name,

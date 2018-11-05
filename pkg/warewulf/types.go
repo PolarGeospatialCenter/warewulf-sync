@@ -7,6 +7,7 @@ type Node struct {
 	Interfaces  NetDevList `yaml:"interfaces"`
 	RoleName    string     `yaml:"role"`
 	Console     string     `yaml:"console"`
+	PxeLoader   string     `yaml:"pxeloader"`
 	PostNetDown bool       `yaml:"postnetdown"`
 	Role        *Role      `yaml:"-"`
 }
