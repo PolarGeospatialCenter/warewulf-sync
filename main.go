@@ -87,10 +87,11 @@ func main() {
 		log.Print(cmd)
 		c := exec.Command(cmd[0], cmd[1:]...)
 
-		err := c.Run()
+		stdErrOut, err := c.CombinedOutput()
 		if err != nil {
 			log.Fatalf("Error executing '%s': %v", strings.Join(cmd, " "), err)
 		}
+		log.Printf("Result: %s", stdErrOut)
 	}
 	// load existing state from warewulf
 	// files, err := warewulf.ListFiles()
