@@ -128,6 +128,13 @@ func (n *Node) UpdateCmd() [][]string {
 		})
 	}
 
+	if n.IPxeUrl != "" {
+		cmds = append(cmds, []string{
+			"wwsh", "provision", "set", n.Name,
+			"--ipxeurl", n.IPxeUrl,
+		})
+	}
+
 	for _, dev := range n.Interfaces {
 		cmd := []string{
 			"wwsh", "node", "set", n.Name,

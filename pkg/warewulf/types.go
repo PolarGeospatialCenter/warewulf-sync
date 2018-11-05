@@ -8,6 +8,7 @@ type Node struct {
 	RoleName    string     `yaml:"role"`
 	Console     string     `yaml:"console"`
 	PxeLoader   string     `yaml:"pxeloader"`
+	IPxeUrl     string     `yaml:ipxeurl`
 	PostNetDown bool       `yaml:"postnetdown"`
 	Role        *Role      `yaml:"-"`
 }
