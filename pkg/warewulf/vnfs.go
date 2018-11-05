@@ -30,6 +30,10 @@ func (v *Vnfs) NewCmd() [][]string {
 		"wwsh", "vnfs", "import", tmpFile,
 		"--name", v.Name,
 	})
+	cmds = append(cmds, []string{
+		"rm", tmpFile,
+	})
+
 	return cmds
 }
 
