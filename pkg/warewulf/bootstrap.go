@@ -31,6 +31,10 @@ func (b *Bootstrap) NewCmd() [][]string {
 		"--name", b.Name,
 	})
 	cmds = append(cmds, []string{
+		"wwsh", "bootstrap", "import", "-y", tmpFile,
+		"--name", b.Name,
+	})
+	cmds = append(cmds, []string{
 		"rm", tmpFile,
 	})
 	return cmds
