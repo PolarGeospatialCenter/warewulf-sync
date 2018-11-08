@@ -19,6 +19,7 @@ type NetDev struct {
 	Interface string `yaml:"interface"`
 	Ip        string `yaml:"ip"`
 	HwAddr    string `yaml:"mac"`
+	MTU       string `yaml:"mtu"`
 	Netmask   string
 	Gateway   string
 }

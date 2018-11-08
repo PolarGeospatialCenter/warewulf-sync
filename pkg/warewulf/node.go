@@ -152,6 +152,9 @@ func (n *Node) UpdateCmd() [][]string {
 		if dev.Gateway != "" {
 			cmd = append(cmd, "--gateway", dev.Gateway)
 		}
+		if dev.MTU != "" {
+			cmd = append(cmd, "--mtu", dev.MTU)
+		}
 		cmds = append(cmds, cmd)
 	}
 
