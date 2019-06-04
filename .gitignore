@@ -1,3 +1,4 @@
 vendor/
 .status/
 warewulf-sync.linux
+warewulf-sync
