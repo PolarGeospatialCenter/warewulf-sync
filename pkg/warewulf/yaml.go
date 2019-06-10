@@ -58,7 +58,11 @@ func LoadYaml(yamlPath string) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	return roles.RequiredObjectsOnly(db)
+
+	for _, role := range roles {
+		db.Roles[role.IdString()] = role
+	}
+	return db, nil
 }
 
 func LoadYamlFile(filePath string, result interface{}) error {
