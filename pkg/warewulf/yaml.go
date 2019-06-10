@@ -1,6 +1,7 @@
 package warewulf
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"path"
@@ -21,16 +22,6 @@ func LoadYaml(yamlPath string) (*DB, error) {
 	for _, f := range files {
 		f.ResolveRelativePaths(yamlPath)
 		db.Files[f.IdString()] = f
-	}
-
-	nodes := make([]*Node, 0)
-	err = LoadYamlFile(path.Join(yamlPath, "nodes.yml"), &nodes)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, n := range nodes {
-		db.Nodes[n.IdString()] = n
 	}
 
 	vnfs := make([]*Vnfs, 0)
@@ -62,6 +53,22 @@ func LoadYaml(yamlPath string) (*DB, error) {
 	for _, role := range roles {
 		db.Roles[role.IdString()] = role
 	}
+
+	nodes := make([]*Node, 0)
+	err = LoadYamlFile(path.Join(yamlPath, "nodes.yml"), &nodes)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, n := range nodes {
+		db.Nodes[n.IdString()] = n
+		if role, ok := db.Roles[n.RoleName]; ok {
+			n.Role = role
+			continue
+		}
+		return nil, fmt.Errorf("role not found for node %s with name %s", n.Name, n.Role)
+	}
+
 	return db, nil
 }
 
