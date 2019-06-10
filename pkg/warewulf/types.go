@@ -58,6 +58,7 @@ type DB struct {
 	Files      map[string]*File
 	Vnfs       map[string]*Vnfs
 	Bootstraps map[string]*Bootstrap
+	Roles      map[string]*Role
 }
 
 func NewDB() *DB {
@@ -66,6 +67,7 @@ func NewDB() *DB {
 	db.Nodes = make(map[string]*Node)
 	db.Vnfs = make(map[string]*Vnfs)
 	db.Bootstraps = make(map[string]*Bootstrap)
+	db.Roles = make(map[string]*Role)
 	return db
 }
 
