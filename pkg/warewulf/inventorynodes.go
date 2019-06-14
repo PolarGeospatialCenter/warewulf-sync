@@ -56,7 +56,9 @@ func (db *DB) LoadNodesFromInventory(inv InventoryNodeGetter, system string) err
 					return err
 				}
 				netDev.Ip = ip.String()
-				netDev.Netmask = mask.Mask.String()
+				if subnetMask := net.IP(mask.Mask).To4(); subnetMask != nil {
+					netDev.Netmask = subnetMask.String()
+				}
 				if gwIp := net.ParseIP(iface.Config.Gateway[0]); gwIp != nil {
 					netDev.Gateway = gwIp.String()
 				}
