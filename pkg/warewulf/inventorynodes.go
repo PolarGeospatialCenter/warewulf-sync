@@ -40,11 +40,8 @@ func (db *DB) LoadNodesFromInventory(inv InventoryNodeGetter, system string) err
 		wwnode.Interfaces = make(NetDevList, 0, len(node.Networks))
 		for netname, iface := range node.Networks {
 			netDev := &NetDev{}
-			logicalNetwork, err := node.Environment.LookupLogicalNetworkName(netname)
-			if err != nil {
-				return err
-			}
-			netDev.Interface = fmt.Sprintf("%s0", logicalNetwork)
+
+			netDev.Interface = fmt.Sprintf("%s0", netname)
 
 			if len(iface.Config.IP) > 0 {
 				ip, mask, err := net.ParseCIDR(iface.Config.IP[0])
