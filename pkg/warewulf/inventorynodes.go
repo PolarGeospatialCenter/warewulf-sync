@@ -28,8 +28,10 @@ func (db *DB) LoadNodesFromInventory(inv InventoryNodeGetter, system string) err
 		wwnode.RoleName = node.Role
 		wwnode.IPxeUrl = node.Environment.IPXEUrl
 
-		if console, ok := node.Metadata["serial_console"]; ok {
-			wwnode.Console = console.(string)
+		if node.Metadata != nil {
+			if console, ok := node.Metadata["serial_console"]; ok {
+				wwnode.Console = console.(string)
+			}
 		}
 		wwnode.PostNetDown = true
 		wwnode.Role = db.Roles[node.Role]
