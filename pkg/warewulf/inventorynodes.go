@@ -2,6 +2,7 @@ package warewulf
 
 import (
 	"fmt"
+	"log"
 	"net"
 
 	"github.com/PolarGeospatialCenter/inventory/pkg/inventory/types"
@@ -26,6 +27,12 @@ func (db *DB) LoadNodesFromInventory(inv InventoryNodeGetter, system string) err
 		wwnode := &Node{}
 		wwnode.Name = node.Hostname
 		wwnode.RoleName = node.Role
+		if role, ok := db.Roles[node.Role]; ok {
+			wwnode.Role = role
+		} else {
+			log.Printf("unable to find role '%s' in warewulf configuration repo: skipping node", node.Role)
+			continue
+		}
 		wwnode.IPxeUrl = node.Environment.IPXEUrl
 
 		if node.Metadata != nil {
