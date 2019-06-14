@@ -30,7 +30,9 @@ func (db *DB) LoadNodesFromInventory(inv InventoryNodeGetter, system string) err
 
 		if node.Metadata != nil {
 			if console, ok := node.Metadata["serial_console"]; ok {
-				wwnode.Console = console.(string)
+				if consoleString, ok := console.(string); ok {
+					wwnode.Console = consoleString
+				}
 			}
 		}
 		wwnode.PostNetDown = true
