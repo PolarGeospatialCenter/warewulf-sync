@@ -8,7 +8,6 @@ import (
 	"github.com/PolarGeospatialCenter/inventory-client/pkg/api/client"
 	"github.com/PolarGeospatialCenter/warewulf-sync/pkg/warewulf"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/spf13/cobra"
@@ -33,7 +32,6 @@ var nodeSyncCmd = &cobra.Command{
 		// create aws session
 		awsConfig := &aws.Config{}
 		awsConfig = awsConfig.WithRegion(cfg.GetString("aws.region"))
-		awsConfig = awsConfig.WithCredentials(credentials.NewStaticCredentials(cfg.GetString("aws.access_key_id"), cfg.GetString("aws.access_key"), ""))
 		sess, err := session.NewSession(awsConfig)
 		if err != nil {
 			log.Fatalf("unable to create aws session: %v", err)
