@@ -61,7 +61,7 @@ var nodeSyncCmd = &cobra.Command{
 			syncCommands := make([][]string, 0)
 			syncCommands = append(syncCommands, BuildSyncCommands(MakeSyncableMap(wwdb.Nodes), MakeSyncableMap(db.Nodes))...)
 			if len(db.Nodes) > 0 {
-				syncCommands = append(syncCommands, []string{"wwsh", "pxe", "-v", "--nodhcp"})
+				syncCommands = append(syncCommands, []string{"wwsh", "pxe", "update", "-v", "--nodhcp"})
 			}
 
 			for _, cmd := range syncCommands {
