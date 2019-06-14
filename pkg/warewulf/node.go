@@ -91,7 +91,7 @@ func NewNodeFromWWObject(obj map[string]interface{}, fileIndex, bootstrapIndex, 
 
 func (n *Node) NewCmd() [][]string {
 	cmds := make([][]string, 0)
-	cmds = append(cmds, []string{"wwsh", "node", "new", n.Name})
+	cmds = append(cmds, []string{"wwsh", "node", "new", n.Name, "--nodhcp"})
 	return cmds
 }
 
@@ -137,7 +137,7 @@ func (n *Node) UpdateCmd() [][]string {
 
 	for _, dev := range n.Interfaces {
 		cmd := []string{
-			"wwsh", "node", "set", n.Name,
+			"wwsh", "node", "set", n.Name, "--nodhcp",
 			"--netdev", dev.Interface,
 		}
 		if dev.Ip != "" {
