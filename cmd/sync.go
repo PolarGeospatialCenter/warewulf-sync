@@ -8,7 +8,7 @@ import (
 	"github.com/PolarGeospatialCenter/inventory-client/pkg/api/client"
 	"github.com/PolarGeospatialCenter/warewulf-sync/pkg/warewulf"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/spf13/cobra"
@@ -31,16 +31,17 @@ var nodeSyncCmd = &cobra.Command{
 		// on event, load db and sync
 		//
 		// create aws session
-		sess, err := session.NewSession(&aws.Config{
-			Region: aws.String(cfg.GetString("aws.region"))},
-		)
+		awsConfig := &aws.Config{}
+		awsConfig = awsConfig.WithRegion(cfg.GetString("aws.region"))
+		awsConfig = awsConfig.WithCredentials(credentials.NewStaticCredentials(cfg.GetString("aws.access_key_id"), cfg.GetString("aws.access_key"), ""))
+		sess, err := session.NewSession(awsConfig)
 		if err != nil {
 			log.Fatalf("unable to create aws session: %v", err)
 		}
 
 		// Create a SQS service client.
 		svc := sqs.New(sess)
-		msgCh := getMsgCh(svc, cfg.GetString("sqs.queue_name"))
+		msgCh := getMsgCh(svc, cfg.GetString("sqs.queue_url"))
 		for _ = range msgCh {
 			inv, err := client.NewInventoryApiDefaultConfig("")
 			if err != nil {
@@ -79,23 +80,13 @@ var nodeSyncCmd = &cobra.Command{
 	},
 }
 
-func getMsgCh(svc *sqs.SQS, name string) chan sqs.Message {
-	resultURL, err := svc.GetQueueUrl(&sqs.GetQueueUrlInput{
-		QueueName: aws.String(name),
-	})
-	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok && aerr.Code() == sqs.ErrCodeQueueDoesNotExist {
-			log.Fatalf("Unable to find queue %q.", name)
-		}
-		log.Fatalf("Unable to queue %q, %v.", name, err)
-	}
-
+func getMsgCh(svc *sqs.SQS, queueUrl string) chan sqs.Message {
 	msgCh := make(chan sqs.Message)
 	go func() {
 		defer close(msgCh)
 		for {
 			result, err := svc.ReceiveMessage(&sqs.ReceiveMessageInput{
-				QueueUrl: resultURL.QueueUrl,
+				QueueUrl: aws.String(queueUrl),
 				AttributeNames: aws.StringSlice([]string{
 					"SentTimestamp",
 				}),
@@ -106,11 +97,19 @@ func getMsgCh(svc *sqs.SQS, name string) chan sqs.Message {
 				WaitTimeSeconds: aws.Int64(cfg.GetInt64("sqs.timeout")),
 			})
 			if err != nil {
-				log.Fatalf("Unable to receive message from queue %q, %v.", name, err)
+				log.Fatalf("Unable to receive message from queue: %v", err)
 			}
 
 			for _, msg := range result.Messages {
 				msgCh <- *msg
+				_, err = svc.DeleteMessage(&sqs.DeleteMessageInput{
+					QueueUrl:      aws.String(queueUrl),
+					ReceiptHandle: msg.ReceiptHandle,
+				})
+				if err != nil {
+					log.Printf("Unable to delete message from queue: %v", err)
+				}
+
 			}
 		}
 	}()

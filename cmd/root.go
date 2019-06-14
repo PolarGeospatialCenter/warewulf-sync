@@ -24,6 +24,9 @@ func initConfig() {
 	cfg.SetDefault("system", "")
 	cfg.SetDefault("sqs.timeout", 20)
 	cfg.AutomaticEnv()
+	cfg.SetConfigName("wwsync")
+	cfg.AddConfigPath("/etc/wwsync")
+	cfg.ReadInConfig()
 }
 
 var rootCmd = &cobra.Command{
