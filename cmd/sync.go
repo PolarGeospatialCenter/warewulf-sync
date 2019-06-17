@@ -40,6 +40,7 @@ var nodeSyncCmd = &cobra.Command{
 		// Create a SQS service client.
 		svc := sqs.New(sess)
 		msgCh := getMsgCh(svc, cfg.GetString("sqs.queue_url"))
+		msgCh <- sqs.Message{}
 		for _ = range msgCh {
 			inv, err := client.NewInventoryApiDefaultConfig("")
 			if err != nil {
