@@ -206,6 +206,10 @@ func (n *Node) Equals(other interface{}) (bool, string) {
 		return false, "Node Name or Console mismatch"
 	}
 
+	if n.Master != otherNode.Master {
+		return false, "Master mismatch"
+	}
+
 	if n.PostNetDown != otherNode.PostNetDown {
 		return false, "PostNetDown mismatch"
 	}
