@@ -11,6 +11,7 @@ type Node struct {
 	IPxeUrl     string     `yaml:ipxeurl`
 	PostNetDown bool       `yaml:"postnetdown"`
 	Role        *Role      `yaml:"-"`
+	Master      string     `yaml:"master"`
 }
 
 type NetDevList []*NetDev

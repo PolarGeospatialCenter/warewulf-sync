@@ -6,7 +6,7 @@ import (
 )
 
 func TestUnmarshalNodeObject(t *testing.T) {
-	testData := `[{"NAME":["test123"],"_TIMESTAMP":1537232705,"_ID":1,"_HWADDR":["00:08:b2:9a:34:f8"],"NODENAME":"test123","_IPADDR":["172.16.0.1"],"NETDEVS":{"ARRAY":[{"NETMASK":"255.255.255.0","GATEWAY":"172.16.0.254","NAME":"eth0","IPADDR":"172.16.0.1","HWADDR":"00:08:b2:9a:34:f8"}]},"ARCH":"x86_64","_TYPE":"node","GROUPS":["foo","bar"],"POSTNETDOWN":1}]`
+	testData := `[{"NAME":["test123"],"_TIMESTAMP":1537232705,"_ID":1,"_HWADDR":["00:08:b2:9a:34:f8"],"NODENAME":"test123","_IPADDR":["172.16.0.1"],"NETDEVS":{"ARRAY":[{"NETMASK":"255.255.255.0","GATEWAY":"172.16.0.254","NAME":"eth0","IPADDR":"172.16.0.1","HWADDR":"00:08:b2:9a:34:f8"}]},"ARCH":"x86_64","_TYPE":"node","GROUPS":["foo","bar"],"MASTER":"172.16.0.100","POSTNETDOWN":1}]`
 	obj := make([]map[string]interface{}, 0)
 	err := json.Unmarshal([]byte(testData), &obj)
 	if err != nil {

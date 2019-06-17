@@ -36,12 +36,15 @@ func (db *DB) LoadNodesFromInventory(inv InventoryNodeGetter, system string) err
 		wwnode.IPxeUrl = node.Environment.IPXEUrl
 
 		if node.Metadata != nil {
-			if console, ok := node.Metadata["serial_console"]; ok {
-				if consoleString, ok := console.(string); ok {
-					wwnode.Console = consoleString
-				}
+			if console, ok := node.Metadata.GetString("serial_console"); ok {
+				wwnode.Console = console
 			}
 		}
+
+		if wwmaster, ok := node.Environment.Metadata.GetString("wwmaster"); ok {
+			wwnode.Master = wwmaster
+		}
+
 		wwnode.PostNetDown = true
 		wwnode.Role = db.Roles[node.Role]
 		wwnode.Interfaces = make(NetDevList, 0, len(node.Networks))

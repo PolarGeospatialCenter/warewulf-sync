@@ -82,6 +82,10 @@ func NewNodeFromWWObject(obj map[string]interface{}, fileIndex, bootstrapIndex, 
 		attachRole = true
 	}
 
+	if master, ok := obj["MASTER"].(string); ok {
+		n.Master = master
+	}
+
 	if attachRole {
 		n.Role = role
 	}
@@ -125,6 +129,13 @@ func (n *Node) UpdateCmd() [][]string {
 		cmds = append(cmds, []string{
 			"wwsh", "provision", "set", n.Name,
 			"--pxeloader", n.PxeLoader,
+		})
+	}
+
+	if n.Master != "" {
+		cmds = append(cmds, []string{
+			"wwsh", "provision", "set", n.Name,
+			"--master", n.Master,
 		})
 	}
 
