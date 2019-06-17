@@ -40,8 +40,11 @@ var nodeSyncCmd = &cobra.Command{
 		// Create a SQS service client.
 		svc := sqs.New(sess)
 		msgCh := getMsgCh(svc, cfg.GetString("sqs.queue_url"))
-		msgCh <- sqs.Message{}
-		for _ = range msgCh {
+		for m := range msgCh {
+			if m.Body != nil {
+				log.Printf("Starting Sync: %s", *m.Body)
+			}
+
 			inv, err := client.NewInventoryApiDefaultConfig("")
 			if err != nil {
 				log.Fatalf("Unable to connecto to inventory API: %v", err)
@@ -80,9 +83,10 @@ var nodeSyncCmd = &cobra.Command{
 }
 
 func getMsgCh(svc *sqs.SQS, queueUrl string) chan sqs.Message {
-	msgCh := make(chan sqs.Message)
+	msgCh := make(chan sqs.Message, 1)
 	go func() {
 		defer close(msgCh)
+		msgCh <- sqs.Message{Body: aws.String("Initial Sync Message")}
 		for {
 			result, err := svc.ReceiveMessage(&sqs.ReceiveMessageInput{
 				QueueUrl: aws.String(queueUrl),
