@@ -88,7 +88,7 @@ func NewNodeFromWWObject(obj map[string]interface{}, fileIndex, bootstrapIndex, 
 		n.Master = master
 	}
 
-	if lastModified, ok := obj["LASTMODIFIED"]; ok {
+	if lastModified, ok := obj["LAST_MODIFIED"]; ok {
 		lastModifiedUnix, err := strconv.ParseInt(lastModified.(string), 10, 64)
 		if err != nil {
 			// ????
