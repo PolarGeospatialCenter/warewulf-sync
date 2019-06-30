@@ -1,17 +1,21 @@
 package warewulf
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type Node struct {
-	Name        string     `yaml:"hostname"`
-	Interfaces  NetDevList `yaml:"interfaces"`
-	RoleName    string     `yaml:"role"`
-	Console     string     `yaml:"console"`
-	PxeLoader   string     `yaml:"pxeloader"`
-	IPxeUrl     string     `yaml:ipxeurl`
-	PostNetDown bool       `yaml:"postnetdown"`
-	Role        *Role      `yaml:"-"`
-	Master      string     `yaml:"master"`
+	Name         string     `yaml:"hostname"`
+	Interfaces   NetDevList `yaml:"interfaces"`
+	RoleName     string     `yaml:"role"`
+	Console      string     `yaml:"console"`
+	PxeLoader    string     `yaml:"pxeloader"`
+	IPxeUrl      string     `yaml:ipxeurl`
+	PostNetDown  bool       `yaml:"postnetdown"`
+	Role         *Role      `yaml:"-"`
+	Master       string     `yaml:"master"`
+	LastModified *time.Time `yaml:"last_modified"`
 }
 
 type NetDevList []*NetDev

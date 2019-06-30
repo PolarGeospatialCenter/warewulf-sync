@@ -2,7 +2,9 @@ package warewulf
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-test/deep"
 )
@@ -86,6 +88,15 @@ func NewNodeFromWWObject(obj map[string]interface{}, fileIndex, bootstrapIndex, 
 		n.Master = master
 	}
 
+	if lastModified, ok := obj["LASTMODIFIED"]; ok {
+		lastModifiedUnix, err := strconv.ParseInt(lastModified.(string), 10, 64)
+		if err != nil {
+			// ????
+		}
+		t := time.Unix(lastModifiedUnix, 0)
+		n.LastModified = &t
+	}
+
 	if attachRole {
 		n.Role = role
 	}
@@ -146,6 +157,12 @@ func (n *Node) UpdateCmd() [][]string {
 		})
 	}
 
+	if n.LastModified != nil {
+		cmds = append(cmds, []string{
+			"wwsh", "object", "modify", "--set", fmt.Sprintf("last_modified=%d", n.LastModified.Unix()), "node", n.Name,
+		})
+	}
+
 	for _, dev := range n.Interfaces {
 		cmd := []string{
 			"wwsh", "node", "set", n.Name, "--nodhcp",
@@ -199,6 +216,10 @@ func (n *Node) Equals(other interface{}) (bool, string) {
 	otherNode, ok := other.(*Node)
 	if !ok {
 		return false, fmt.Sprintf("Wrong type or non-existent %T", other)
+	}
+
+	if n.LastModified.Unix() != otherNode.LastModified.Unix() {
+		return false, "Last modified time mismatch"
 	}
 
 	if n.Name != otherNode.Name ||

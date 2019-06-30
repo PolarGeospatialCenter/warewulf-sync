@@ -75,6 +75,7 @@ func (db *DB) LoadNodesFromInventory(inv InventoryNodeGetter, system string) err
 
 			wwnode.Interfaces = append(wwnode.Interfaces, netDev)
 		}
+		wwnode.LastModified = &node.LastUpdated
 		wwnodes = append(wwnodes, wwnode)
 	}
 	db.Nodes = make(map[string]*Node, len(wwnodes))
