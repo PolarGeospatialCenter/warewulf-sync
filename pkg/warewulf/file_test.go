@@ -18,3 +18,26 @@ func TestUnmarshalFileObject(t *testing.T) {
 	}
 
 }
+
+func TestFileUpdateCmdLocal(t *testing.T) {
+	f := File{Name: "test.local", Source: "file/test.local"}
+	cmds := f.UpdateCmd()
+
+	if len(cmds) != 2 {
+		t.Errorf("Wrong number of commands returned: %v", cmds)
+	}
+}
+
+func TestFileUpdateCmdRemote(t *testing.T) {
+	f := File{Name: "test.remote", Source: "https://foo.test/file/test.remote"}
+	cmds := f.UpdateCmd()
+
+	t.Logf("Commands: %v", cmds)
+	if len(cmds) != 3 {
+		t.Errorf("Wrong number of commands returned: %v", cmds)
+	}
+
+	if cmds[0][0] != "curl" {
+		t.Errorf("First command should be curl, got: %v", cmds[0])
+	}
+}

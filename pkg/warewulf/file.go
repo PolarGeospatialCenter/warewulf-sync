@@ -2,6 +2,7 @@ package warewulf
 
 import (
 	"fmt"
+	"net/url"
 	"path"
 	"strconv"
 	"strings"
@@ -65,7 +66,14 @@ func (f *File) UpdateCmd() [][]string {
 	}
 
 	if f.Source != "" {
-		cmd = append(cmd, "-o", f.Source)
+		filePath := f.Source
+		// add command to download file if it's source is a URL
+		if u, err := url.Parse(f.Source); err == nil && u.IsAbs() {
+			tmpFile := path.Join("/tmp", fmt.Sprintf("%s.tmp", f.Name))
+			cmds = append(cmds, []string{"curl", f.Source, "-o", tmpFile})
+			filePath = tmpFile
+		}
+		cmd = append(cmd, "-o", filePath)
 	}
 	cmds = append(cmds, cmd)
 
