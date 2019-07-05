@@ -21,6 +21,7 @@ func TestUnmarshalFileObject(t *testing.T) {
 
 func TestFileUpdateCmdLocal(t *testing.T) {
 	f := File{Name: "test.local", Source: "file/test.local"}
+	f.ResolveRelativePaths("/tmp/data")
 	cmds := f.UpdateCmd()
 
 	if len(cmds) != 2 {
@@ -30,6 +31,7 @@ func TestFileUpdateCmdLocal(t *testing.T) {
 
 func TestFileUpdateCmdRemote(t *testing.T) {
 	f := File{Name: "test.remote", Source: "https://foo.test/file/test.remote"}
+	f.ResolveRelativePaths("/tmp/data")
 	cmds := f.UpdateCmd()
 
 	t.Logf("Commands: %v", cmds)

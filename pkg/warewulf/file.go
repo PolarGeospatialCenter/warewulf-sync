@@ -96,6 +96,10 @@ func (f *File) IdString() string {
 }
 
 func (f *File) ResolveRelativePaths(base string) {
+	if u, err := url.Parse(f.Source); err == nil && u.IsAbs() {
+		return
+	}
+
 	if !path.IsAbs(f.Source) && f.Source != "" {
 		f.Source = path.Join(base, f.Source)
 	}
