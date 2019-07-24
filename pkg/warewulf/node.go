@@ -114,13 +114,15 @@ func (n *Node) UpdateCmd() [][]string {
 	cmds := make([][]string, 0)
 	cmds = append(cmds, n.DeleteCmd()...)
 	cmds = append(cmds, n.NewCmd()...)
-	cmd := []string{"wwsh", "node", "set", n.Name}
+	var cmd []string
+
 	if n.Role != nil {
 		if len(n.Role.Groups) > 0 {
+			cmd = []string{"wwsh", "node", "set", n.Name}
 			cmd = append(cmd, "-g", strings.Join(n.Role.Groups, ","))
+			cmds = append(cmds, cmd)
 		}
 	}
-	cmds = append(cmds, cmd)
 
 	if n.Console != "" {
 		cmds = append(cmds, []string{
