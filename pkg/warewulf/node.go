@@ -218,7 +218,9 @@ func (n *Node) Equals(other interface{}) (bool, string) {
 		return false, fmt.Sprintf("Wrong type or non-existent %T", other)
 	}
 
-	if n.LastModified.Unix() != otherNode.LastModified.Unix() {
+	if (n.LastModified == nil && otherNode.LastModified != nil) ||
+		(n.LastModified != nil && otherNode.LastModified == nil) ||
+		(n.LastModified != nil && otherNode.LastModified != nil && n.LastModified.Unix() != otherNode.LastModified.Unix()) {
 		return false, "Last modified time mismatch"
 	}
 
