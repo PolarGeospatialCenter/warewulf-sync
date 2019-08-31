@@ -48,6 +48,7 @@ func (db *DB) LoadNodesFromInventory(inv InventoryNodeGetter, system string) err
 		wwnode.PostNetDown = true
 		wwnode.Role = db.Roles[node.Role]
 		wwnode.Interfaces = make(NetDevList, 0, len(node.Networks))
+		gwNetwork := chooseDefaultGatewayNetwork(node.Networks)
 		for netname, iface := range node.Networks {
 			netDev := &NetDev{}
 
@@ -62,7 +63,7 @@ func (db *DB) LoadNodesFromInventory(inv InventoryNodeGetter, system string) err
 				if subnetMask := net.IP(mask.Mask).To4(); subnetMask != nil {
 					netDev.Netmask = subnetMask.String()
 				}
-				if gwIp := net.ParseIP(iface.Config.Gateway[0]); gwIp != nil {
+				if gwIp := net.ParseIP(iface.Config.Gateway[0]); gwIp != nil && gwNetwork == netname {
 					netDev.Gateway = gwIp.String()
 				}
 			}
@@ -84,4 +85,49 @@ func (db *DB) LoadNodesFromInventory(inv InventoryNodeGetter, system string) err
 	}
 	return nil
 
+}
+
+func getGatewayWeight(nic *types.NICInstance) int {
+	cidrWeights := map[string]int{
+		"192.168.0.0/16": 2,
+		"172.16.0.0/12":  2,
+		"10.0.0.0/8":     2,
+		"fe80::/10":      1,
+		"169.254.0.0/16": 1,
+		"fc00::/7":       2,
+	}
+
+	var weight int
+	if len(nic.Config.Gateway) == 0 {
+		return 0
+	}
+	for _, gwCandidate := range nic.Config.Gateway {
+		gwCandidateIP := net.ParseIP(gwCandidate)
+		if gwCandidateIP == nil {
+			continue
+		}
+
+		candidateWeight := 4
+		for cidr, netWeight := range cidrWeights {
+			_, candidateNet, _ := net.ParseCIDR(cidr)
+			if candidateNet.Contains(gwCandidateIP) {
+				candidateWeight = netWeight
+			}
+		}
+		weight += candidateWeight
+	}
+	return weight
+}
+
+func chooseDefaultGatewayNetwork(networks map[string]*types.NICInstance) string {
+	var gwNetwork string
+	var gwWeight int
+
+	for network, nic := range networks {
+		if candidateWeight := getGatewayWeight(nic); candidateWeight > gwWeight {
+			gwWeight = candidateWeight
+			gwNetwork = network
+		}
+	}
+	return gwNetwork
 }
